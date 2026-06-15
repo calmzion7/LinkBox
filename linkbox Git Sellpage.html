@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkBox — Intelligent Media Engine</title>
+<link href="*" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #E03030;
+    --red-dim: #B52424;
+    --red-glow: rgba(224, 48, 48, 0.15);
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f0f0;
+    --muted: #888;
+    --dimmer: #555;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    height: 60px;
+    background: rgba(14,14,15,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display);
+    font-weight: 700; font-size: 18px; letter-spacing: -0.3px;
+  }
+
+  .logo-icon {
+    width: 28px; height: 28px; border-radius: 7px;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .logo-icon svg { width: 16px; height: 16px; fill: white; }
+
+  .nav-badge {
+    font-size: 11px; font-weight: 500; letter-spacing: 0.5px;
+    color: var(--red);
+    border: 1px solid var(--red-dim);
+    padding: 2px 8px; border-radius: 20px;
+    background: var(--red-glow);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 2rem 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(224,48,48,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--red);
+    margin-bottom: 1.5rem;
+  }
+
+  .eyebrow-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); }
+
+  h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    max-width: 780px;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 span { color: var(--red); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--red);
+    color: white; font-weight: 600; font-size: 15px;
+    padding: 13px 28px; border-radius: 8px;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+
+  .hero-cta:hover { background: var(--red-dim); }
+
+  .hero-cta svg { width: 16px; height: 16px; fill: none; stroke: white; stroke-width: 2; }
+
+  /* STATS ROW */
+  .stats {
+    display: flex; justify-content: center; gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .stat {
+    flex: 1; max-width: 200px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 1.8rem; font-weight: 700;
+    color: var(--text);
+    display: block;
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* FEATURES */
+  .section { padding: 5rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--red);
+    margin-bottom: 0.75rem;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700; letter-spacing: -0.8px;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub { color: var(--muted); max-width: 500px; font-size: 15px; margin-bottom: 3rem; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    padding: 1.75rem;
+    transition: background 0.2s;
+  }
+
+  .feature-card:hover { background: var(--surface2); }
+
+  .feature-icon {
+    width: 40px; height: 40px; border-radius: 9px;
+    background: var(--red-glow);
+    border: 1px solid rgba(224,48,48,0.25);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .feature-icon svg { width: 18px; height: 18px; stroke: var(--red); fill: none; stroke-width: 1.8; }
+
+  .feature-title {
+    font-family: var(--font-display);
+    font-size: 15px; font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* MODES SECTION */
+  .modes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 2rem;
+  }
+
+  .mode-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px; font-weight: 500;
+    color: var(--muted);
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .mode-pill svg { width: 15px; height: 15px; stroke: var(--red); fill: none; stroke-width: 1.8; flex-shrink: 0; }
+
+  /* CTA SECTION */
+  .cta-section {
+    text-align: center;
+    padding: 5rem 2rem 6rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .cta-section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700; letter-spacing: -1px;
+    margin-bottom: 1rem;
+  }
+
+  .cta-section p { color: var(--muted); margin-bottom: 2rem; font-size: 15px; }
+
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--red); color: white;
+    font-weight: 600; font-size: 14px;
+    padding: 12px 24px; border-radius: 7px;
+    transition: background 0.2s; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--red-dim); }
+
+  .btn-ghost {
+    background: transparent; color: var(--muted);
+    font-weight: 500; font-size: 14px;
+    padding: 12px 24px; border-radius: 7px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s, color 0.2s; cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+  }
+
+  footer .nav-logo { font-size: 15px; }
+  footer p { font-size: 13px; color: var(--dimmer); }
+
+  /* POLICIES ROW */
+  .policy-links { display: flex; gap: 1.5rem; }
+  .policy-links a { font-size: 13px; color: var(--dimmer); transition: color 0.2s; }
+  .policy-links a:hover { color: var(--muted); }
+
+  @media (max-width: 600px) {
+    .stats { flex-wrap: wrap; }
+    .stat { min-width: 50%; border-right: none; border-bottom: 1px solid var(--border); }
+    footer { flex-direction: column; text-align: center; }
+    .policy-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+    </div>
+    LinkBox
+  </div>
+  <span class="nav-badge">Early Access</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">
+    <span class="eyebrow-dot"></span>
+    AI-Powered Media Engine
+  </div>
+  <h1>Your entire media world,<br><span>intelligently organised</span></h1>
+  <p class="hero-sub">LinkBox brings your music, live radio, podcasts, news, and video together in one powerful engine — with AI that learns, curates, and works alongside you.</p>
+  <a href="#features" class="hero-cta">
+    Explore features
+    <svg viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+  </a>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><span class="stat-num">28,000+</span><span class="stat-label">Tracks managed</span></div>
+  <div class="stat"><span class="stat-num">AI</span><span class="stat-label">Smart playlists</span></div>
+  <div class="stat"><span class="stat-num">Live</span><span class="stat-label">Radio &amp; news streams</span></div>
+  <div class="stat"><span class="stat-num">One</span><span class="stat-label">Unified interface</span></div>
+</div>
+
+<!-- FEATURES -->
+<section id="features" class="section">
+  <p class="section-label">Features</p>
+  <h2 class="section-title">Built for people who take<br>their media seriously</h2>
+  <p class="section-sub">Every tool you need — no subscriptions to juggle, no apps to switch between.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="feature-title">AI Smart Playlists</div>
+      <div class="feature-desc">Describe the mood, genre, or energy you want and LinkBox builds the playlist. It learns your taste over time and refines every suggestion.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="feature-title">Muse AI Chat</div>
+      <div class="feature-desc">Chat with your library. Ask about the track playing, dive into an artist's history, or get instant recommendations — all in context.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"/></svg>
+      </div>
+      <div class="feature-title">Agentic Memory</div>
+      <div class="feature-desc">LinkBox remembers your preferences, history, and listening patterns — building a personalised engine that gets sharper with every session.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8M12 18v2"/></svg>
+      </div>
+      <div class="feature-title">Live Streams & Radio</div>
+      <div class="feature-desc">Music, live news, sports, podcasts, documentaries, cooking, and sleep — all streamed live and integrated into your unified library.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>
+      </div>
+      <div class="feature-title">Smart Library Tools</div>
+      <div class="feature-desc">Rate, tag, sort, and explore your collection with advanced filtering, genre detection, and focus modes built for deep listening.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      </div>
+      <div class="feature-title">Focus & Sleep Modes</div>
+      <div class="feature-desc">Curated ambient, focus, sleep, and motivation channels with intelligent session management — designed around how you actually work and rest.</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODES -->
+<section class="section" style="padding-top: 0;">
+  <p class="section-label">Content Modes</p>
+  <h2 class="section-title">Everything in one place</h2>
+  <div class="modes-grid">
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><path d="M9 19V6l12-3v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="15" r="3"/></svg>Music</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Live News</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16"/></svg>Podcasts</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Documentaries</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Live Sports</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>Cooking</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Motivation</div>
+    <div class="mode-pill"><svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>Custom Channels</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <h2>Ready to hear the difference?</h2>
+  <p>Join the early access list and be among the first to experience LinkBox.</p>
+  <div class="cta-row">
+    <a href="#" class="btn-primary">Get Early Access</a>
+    <a href="#features" class="btn-ghost">Learn more</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 16 16" style="fill:white"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+    </div>
+    LinkBox
+  </div>
+  <div class="policy-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+  </div>
+  <p>&copy; 2026 LinkBox. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
