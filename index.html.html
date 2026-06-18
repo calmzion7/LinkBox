@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LinkBox — The AI music player you own forever</title>
+<meta name="description" content="A blazing-fast, AI-powered music player for your 70k+ track library. Local + cloud AI, smart shuffle, self-cleaning library. One-time $9.99, no subscription, updates for life.">
+<style>
+  :root{
+    --bg:#08080a; --bg-2:#0c0c0e; --surface:#121214; --surface-2:#17171a;
+    --border-line:#222226; --border-soft:#1b1b1f;
+    --text:#edeef2; --text-2:#9a9ba6; --text-3:#65666f;
+    --red:#e0322f; --red-soft:rgba(224,50,47,.55); --red-dim:rgba(224,50,47,.12);
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(820px 420px at 50% -8%,rgba(224,50,47,.10),transparent 70%),
+      linear-gradient(180deg,#0a0a0c 0%,#08080a 40%);
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+  a{color:inherit;text-decoration:none}
+
+  /* Nav */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:22px 0;
+      border-bottom:1px solid var(--border-soft)}
+  .logo{display:flex;align-items:center;gap:11px;font-weight:700;font-size:18px;letter-spacing:.3px}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:#101012;border:1px solid var(--border-line);
+              position:relative}
+  .logo .mark::after{content:"";position:absolute;inset:7px;border-radius:3px;
+              background:var(--red);box-shadow:0 0 14px var(--red-soft)}
+  .nav-cta{padding:9px 16px;border-radius:9px;background:var(--surface-2);
+           border:1px solid var(--border-line);font-size:14px;font-weight:600;transition:.2s}
+  .nav-cta:hover{border-color:var(--red-soft)}
+
+  /* Hero */
+  header{text-align:center;padding:74px 0 30px}
+  .pill{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:#f3c6c5;
+        background:var(--red-dim);border:1px solid rgba(224,50,47,.32);padding:6px 15px;border-radius:999px;margin-bottom:24px}
+  .pill .dot{width:6px;height:6px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red)}
+  h1{font-size:56px;line-height:1.05;font-weight:800;letter-spacing:-1.4px;margin-bottom:20px}
+  h1 .g{color:var(--red)}
+  .sub{font-size:19px;color:var(--text-2);max-width:680px;margin:0 auto 32px}
+  .cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:16px;
+       padding:14px 26px;border-radius:11px;cursor:pointer;border:none;transition:.2s}
+  .btn-primary{background:var(--red);color:#fff;box-shadow:0 10px 34px rgba(224,50,47,.34)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 14px 40px rgba(224,50,47,.46)}
+  .btn-primary small{font-weight:600;opacity:.85;font-size:13px}
+  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border-line)}
+  .btn-ghost:hover{border-color:var(--red-soft)}
+  .micro{margin-top:18px;font-size:13.5px;color:var(--text-3)}
+  .micro b{color:var(--text-2)}
+
+  /* Stat strip */
+  .stats{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin:36px auto 0;
+         border:1px solid var(--border-soft);border-radius:16px;max-width:760px;overflow:hidden}
+  .stat{text-align:center;flex:1;min-width:160px;padding:22px 18px;border-left:1px solid var(--border-soft)}
+  .stat:first-child{border-left:none}
+  .stat .n{font-size:27px;font-weight:800;letter-spacing:-.5px}
+  .stat .n .accent{color:var(--red)}
+  .stat .l{font-size:12.5px;color:var(--text-3);letter-spacing:.3px;margin-top:3px}
+
+  /* Section */
+  section{padding:64px 0}
+  .eyebrow{text-align:center;font-size:12.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+           color:var(--red);margin-bottom:12px}
+  h2{text-align:center;font-size:36px;font-weight:800;letter-spacing:-.7px;margin-bottom:10px}
+  .lead{text-align:center;color:var(--text-2);max-width:620px;margin:0 auto 44px;font-size:16.5px}
+
+  /* ===== Carousel ===== */
+  .showcase{padding-top:24px}
+  .carousel{position:relative;max-width:1000px;margin:0 auto;
+            border:1px solid var(--border-line);border-radius:18px;overflow:hidden;
+            background:var(--surface);box-shadow:0 30px 80px rgba(0,0,0,.5)}
+  .car-window{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
+  .slide{position:absolute;inset:0;opacity:0;transform:scale(1.04);
+         transition:opacity .7s ease,transform 1.2s ease;pointer-events:none}
+  .slide.active{opacity:1;transform:scale(1);pointer-events:auto}
+  .slide img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;display:block}
+  /* placeholder look when an image is missing */
+  .slide .ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+             gap:10px;color:var(--text-3);background:
+             repeating-linear-gradient(45deg,#101012 0 18px,#0c0c0e 18px 36px)}
+  .slide .ph span{font-size:13px;letter-spacing:.5px}
+  /* caption bar below the image */
+  .car-caption{border-top:1px solid var(--border-soft);padding:18px 24px;text-align:left;
+               min-height:92px;background:var(--bg-2)}
+  .car-caption .step{font-size:11.5px;font-weight:700;letter-spacing:1.5px;color:var(--red);
+                     font-variant-numeric:tabular-nums;margin-bottom:6px}
+  .car-caption h4{font-size:18px;font-weight:700;letter-spacing:-.2px;margin-bottom:3px}
+  .car-caption p{font-size:14px;color:var(--text-2);max-width:640px}
+  .car-btn{position:absolute;top:calc(50% - 56px);transform:translateY(-50%);z-index:5;
+           width:42px;height:42px;border-radius:50%;cursor:pointer;
+           background:rgba(12,12,14,.6);backdrop-filter:blur(6px);
+           border:1px solid var(--border-line);color:var(--text);
+           font-size:18px;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .car-btn:hover{border-color:var(--red-soft);background:rgba(20,20,22,.85)}
+  .car-prev{left:14px}.car-next{right:14px}
+  .dots{display:flex;gap:7px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border-line);cursor:pointer;transition:.2s;border:none;padding:0}
+  .dot.active{background:var(--red);width:22px;border-radius:6px}
+
+  /* Feature grid (no icons) */
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:var(--surface);border:1px solid var(--border-soft);border-radius:var(--radius);
+        padding:24px 22px;position:relative;transition:.22s;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;
+                background:var(--red);transform:scaleY(0);transform-origin:top;transition:transform .25s ease}
+  .card:hover{border-color:var(--border-line);transform:translateY(-2px)}
+  .card:hover::before{transform:scaleY(1)}
+  .card .idx{font-size:12px;font-weight:700;color:var(--red);letter-spacing:1px;margin-bottom:12px;font-variant-numeric:tabular-nums}
+  .card h3{font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.2px}
+  .card p{font-size:14px;color:var(--text-2);line-height:1.62}
+
+  /* Pricing */
+  .price-wrap{display:flex;justify-content:center}
+  .price{background:linear-gradient(180deg,var(--surface-2),var(--surface));
+         border:1px solid var(--border-line);border-radius:20px;padding:40px 42px;text-align:center;
+         max-width:440px;width:100%;box-shadow:0 24px 70px rgba(0,0,0,.5);position:relative}
+  .price::after{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;pointer-events:none;
+        background:linear-gradient(180deg,var(--red-soft),transparent 45%);
+        -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+        -webkit-mask-composite:xor;mask-composite:exclude}
+  .price .tag{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);margin-bottom:16px}
+  .price .amt{font-size:66px;font-weight:800;letter-spacing:-2px;line-height:1}
+  .price .amt span{font-size:24px;color:var(--text-3);font-weight:600;vertical-align:super}
+  .price .once{color:var(--text-2);margin:10px 0 24px;font-size:15px}
+  .price ul{list-style:none;text-align:left;margin:0 auto 28px;max-width:280px}
+  .price li{padding:8px 0;font-size:14.5px;color:var(--text);display:flex;gap:11px;align-items:flex-start}
+  .price li::before{content:"";flex:0 0 16px;height:16px;margin-top:3px;border-radius:50%;
+        background:var(--red-dim);border:1px solid var(--red-soft);
+        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'><path d='M2 6l3 3 5-6' stroke='%23e0322f' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat:no-repeat;background-position:center}
+  .price .btn{width:100%;justify-content:center}
+
+  footer{border-top:1px solid var(--border-soft);padding:34px 0;text-align:center;color:var(--text-3);font-size:13.5px}
+
+  @media(max-width:860px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+    h1{font-size:42px}
+    .caption p{display:none}
+  }
+  @media(max-width:560px){
+    .grid{grid-template-columns:1fr}
+    h1{font-size:33px}
+    .stat{border-left:none;border-top:1px solid var(--border-soft)}
+    .stat:first-child{border-top:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <div class="logo"><span class="mark"></span> LinkBox</div>
+    <a class="nav-cta" href="#pricing">Get LinkBox · $9.99</a>
+  </nav>
+
+  <header>
+    <span class="pill"><span class="dot"></span> Now on Product Hunt · One-time price, updates for life</span>
+    <h1>The AI music player<br>you actually <span class="g">own</span>.</h1>
+    <p class="sub">A blazing-fast desktop player for your whole library — with AI baked into every layer, a self-cleaning catalog, and shuffle that learns what you love. No subscription. Ever.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="#pricing">Get LinkBox <small>· $9.99 once</small></a>
+      <a class="btn btn-ghost" href="#showcase">See it in action ↓</a>
+    </div>
+    <div class="micro">One-time <b>$9.99</b> · <b>Lifetime updates</b> · <b>No accounts, no rent</b></div>
+
+    <div class="stats">
+      <div class="stat"><div class="n">70,000<span class="accent">+</span></div><div class="l">tracks &amp; links it handles</div></div>
+      <div class="stat"><div class="n">Local <span class="accent">+</span> Cloud</div><div class="l">AI, your choice</div></div>
+      <div class="stat"><div class="n"><span class="accent">$</span>9.99</div><div class="l">once — not per month</div></div>
+    </div>
+  </header>
+
+  <!-- ===== SHOWCASE CAROUSEL ===== -->
+  <section id="showcase" class="showcase">
+    <div class="eyebrow">A look inside</div>
+    <h2>Built like a pro tool.</h2>
+    <p class="lead">Dark, fast, and dense with the stuff that matters. Swipe through a few of the screens.</p>
+
+    <div class="carousel" id="carousel">
+      <div class="car-window" id="carWindow">
+        <!-- To add/replace: drop a PNG in images/, copy a slide block, point src at it, and add a matching entry to the CAPTIONS array in the script below. -->
+        <div class="slide active"><div class="ph"><span>images/LB-1.png</span></div><img src="images/LB-1.png" alt="LinkBox player" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-2.png</span></div><img src="images/LB-2.png" alt="Color filters" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-3.png</span></div><img src="images/LB-3.png" alt="Live sports" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-3.5.png</span></div><img src="images/LB-3.5.png" alt="Live news" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-3.7.png</span></div><img src="images/LB-3.7.png" alt="Live weather" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-4.png</span></div><img src="images/LB-4.png" alt="Millions of songs" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-5.png</span></div><img src="images/LB-5.png" alt="Equalizer" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-5.2.png</span></div><img src="images/LB-5.2.png" alt="Media wall" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-5.4.png</span></div><img src="images/LB-5.4.png" alt="Curate anything, play everything" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-6.png</span></div><img src="images/LB-6.png" alt="Layouts and AI organizing" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-7.png</span></div><img src="images/LB-7.png" alt="Internet radio and smart library" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-8.png</span></div><img src="images/LB-8.png" alt="Ask the AI for a vibe" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-9.png</span></div><img src="images/LB-9.png" alt="AI that knows your library" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-10.png</span></div><img src="images/LB-10.png" alt="Live streaming built in" onerror="this.style.display='none'"></div>
+        <div class="slide"><div class="ph"><span>images/LB-11.png</span></div><img src="images/LB-11.png" alt="Re-theme the whole app" onerror="this.style.display='none'"></div>
+
+        <button class="car-btn car-prev" id="carPrev" aria-label="Previous">‹</button>
+        <button class="car-btn car-next" id="carNext" aria-label="Next">›</button>
+      </div>
+      <div class="car-caption">
+        <div class="step" id="carStep"></div>
+        <h4 id="carTitle"></h4>
+        <p id="carText"></p>
+      </div>
+    </div>
+    <div class="dots" id="carDots"></div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section id="features">
+    <div class="eyebrow">What's inside</div>
+    <h2>Loaded. And fast.</h2>
+    <p class="lead">Three months of building, packed into one player. Here's the short version.</p>
+
+    <div class="grid">
+      <div class="card"><div class="idx">01</div><h3>AI harness, wired into everything</h3><p>The built-in AI knows your whole library and what's playing right now. Ask it for a vibe and it builds a playlist into your AI area — ready to shuffle. Local or cloud, your call, with memory that sticks.</p></div>
+      <div class="card"><div class="idx">02</div><h3>Shuffle that learns you</h3><p>Weighted-vote ranking drives a smart shuffle, plus a custom shuffle with its own hit-frequency weighting — and a one-tap "skip this playlist" toggle when you want it out of rotation.</p></div>
+      <div class="card"><div class="idx">03</div><h3>A library that cleans itself</h3><p>The −1 Vault auto-pulls tracks you're done with out of sight. Smart Radio pulls fresh tracks and prunes the duds automatically. Dead links don't pile up.</p></div>
+      <div class="card"><div class="idx">04</div><h3>Tag system that hides the noise</h3><p>Auto-sorts Shorts, concert, remix, documentary and cover versions so they stay out of your main library and playlists — unless you want them.</p></div>
+      <div class="card"><div class="idx">05</div><h3>Smart orchestrator loop</h3><p>A loop manager uses local AI to label every track and link in the background, so your whole catalog gets organized without you lifting a finger.</p></div>
+      <div class="card"><div class="idx">06</div><h3>YouTube API plugin system</h3><p>Plug in your own key and pull your own tracks, your way. The player is built to extend, not box you in.</p></div>
+      <div class="card"><div class="idx">07</div><h3>Smart iframe player</h3><p>A custom player surface with real controls and features — not a bare embed. Smooth on desktop, and runs beautifully on iPad too.</p></div>
+      <div class="card"><div class="idx">08</div><h3>Color &amp; layout, your way</h3><p>A full color system and layout manager let you reshape the whole look and feel until it's yours.</p></div>
+      <div class="card"><div class="idx">09</div><h3>Built for big libraries</h3><p>70,000+ links and still snappy. Designed to stay fast as your collection grows, not grind to a halt.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section id="pricing">
+    <div class="eyebrow">Pricing</div>
+    <h2>Pay once. Keep it forever.</h2>
+    <p class="lead">No subscription, no account treadmill, no features held hostage. Buy it, own it, get every update.</p>
+    <div class="price-wrap">
+      <div class="price">
+        <div class="tag">Lifetime license</div>
+        <div class="amt"><span>$</span>9.99</div>
+        <div class="once">one-time — that's the whole price</div>
+        <ul>
+          <li>Every feature, no tiers</li>
+          <li>Free updates for life</li>
+          <li>Local &amp; cloud AI included</li>
+          <li>Runs on desktop + iPad</li>
+          <li>No subscription, no accounts</li>
+        </ul>
+        <a class="btn btn-primary" href="https://linkbox.lemonsqueezy.com/">Get LinkBox now</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    LinkBox — made by an indie maker who got tired of renting software. © 2026
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  // One entry per slide, in the same order as the slides above.
+  var CAPTIONS = [
+    {t:"A clean, focused player",        d:"Dark, distraction-free, and built entirely around what's playing."},
+    {t:"Thousands of color filters",     d:"Recolor the whole interface — every surface is fully customizable."},
+    {t:"Live sports, too",               d:"It's not just music — pull in live sports right alongside your library."},
+    {t:"Live news",                      d:"Breaking-news channels, a click away inside LinkBox."},
+    {t:"Live weather",                   d:"Weather and other live channels, all in the same player."},
+    {t:"Access to millions of songs",    d:"Tap into a virtually limitless catalog — all from one app."},
+    {t:"Full equalizer & spectrum",      d:"A 10-band EQ with presets, compression, bass boost, and a system-wide spectrum analyzer."},
+    {t:"Your whole wall of media",       d:"Thousands of tracks and links at a glance — and still fast."},
+    {t:"Curate anything. Play everything.", d:"One app for your entire collection."},
+    {t:"Layouts + AI organizing",        d:"Switch layouts, recolor, and let the AI metadata orchestrator label your catalog in the background."},
+    {t:"Internet radio + smart library", d:"Built-in internet radio and an AI that keeps your library clean."},
+    {t:"Ask the AI for a vibe",          d:"Chat to build playlists by genre or mood — it assembles them for you."},
+    {t:"AI that knows your library",     d:"Ask about your collection and get real answers about what you own."},
+    {t:"Live streaming built in",        d:"Live feeds play right inside the same clean player."},
+    {t:"Re-theme the whole app",         d:"Same player, cool teal — make the look completely your own."}
+  ];
+
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var dotsWrap = document.getElementById('carDots');
+  var stepEl = document.getElementById('carStep');
+  var titleEl = document.getElementById('carTitle');
+  var textEl = document.getElementById('carText');
+  var i = 0, timer = null, DELAY = 5000;
+
+  slides.forEach(function(_, n){
+    var b = document.createElement('button');
+    b.className = 'dot' + (n===0?' active':'');
+    b.setAttribute('aria-label','Go to slide '+(n+1));
+    b.addEventListener('click', function(){ go(n); reset(); });
+    dotsWrap.appendChild(b);
+  });
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function caption(){
+    var c = CAPTIONS[i] || {t:'',d:''};
+    stepEl.textContent = pad(i+1) + ' / ' + pad(slides.length);
+    titleEl.textContent = c.t;
+    textEl.textContent = c.d;
+  }
+  function go(n){
+    slides[i].classList.remove('active'); dots[i].classList.remove('active');
+    i = (n + slides.length) % slides.length;
+    slides[i].classList.add('active'); dots[i].classList.add('active');
+    caption();
+  }
+  function next(){ go(i+1); }
+  function prev(){ go(i-1); }
+  function reset(){ clearInterval(timer); timer = setInterval(next, DELAY); }
+
+  document.getElementById('carNext').addEventListener('click', function(){ next(); reset(); });
+  document.getElementById('carPrev').addEventListener('click', function(){ prev(); reset(); });
+  caption();
+  reset();
+})();
+</script>
+</body>
+</html>
